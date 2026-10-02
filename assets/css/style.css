@@ -1,0 +1,963 @@
+/* ═══════════════════════════════════════════════════════════════
+   ExoR — Plataforma
+   Estilo: editorial formal · oscuro cálido · acento latón
+   Tipos:  Fraunces (display) · Inter (texto) · IBM Plex Mono (meta)
+   Iconos: Material Symbols Outlined
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg:          #0f0f0d;
+  --bg-raised:   #161614;
+  --panel:       rgba(236, 232, 223, 0.025);
+  --line:        rgba(236, 232, 223, 0.13);
+  --line-strong: rgba(236, 232, 223, 0.30);
+  --text:        #ece8df;
+  --muted:       #a09a8c;
+  --brass:       #c2a15e;
+  --wa:          #8fc7a4;
+  --header-h:    72px;
+  --radius:      6px;
+  --ease:        cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ── Base ────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; }
+
+::selection { background: rgba(194, 161, 94, 0.28); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: #2c2b26;
+  border-radius: 6px;
+  border: 2px solid var(--bg);
+}
+
+.wrap {
+  width: min(1160px, 100% - 48px);
+  margin-inline: auto;
+}
+
+/* ── Fondo WebGL (solo escritorio) ───────────────────────────── */
+
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: none;
+}
+
+.bg-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: none;
+  /* velo oscuro para que el contenido siempre sea legible */
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 13, 0.42) 0%,
+    rgba(15, 15, 13, 0.55) 55%,
+    rgba(15, 15, 13, 0.72) 100%
+  );
+}
+
+body.has-shader #bgCanvas,
+body.has-shader .bg-veil {
+  display: block;
+}
+
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Pantalla de carga ───────────────────────────────────────── */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity 0.45s var(--ease), visibility 0.45s;
+  /* Resguardo: si el JS falla, se oculta sola a los 4s */
+  animation: loader-auto-hide 0.5s ease 4s forwards;
+}
+
+body.is-loaded .loader {
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes loader-auto-hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.loader__mark {
+  display: grid;
+  place-items: center;
+  animation: loader-spin 1.7s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes loader-spin {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
+
+.loader__logo {
+  height: 84px;
+  width: auto;
+  /* el PNG tiene fondo negro → se funde con el fondo oscuro */
+  mix-blend-mode: screen;
+}
+
+/* Letra de respaldo si todavía no se subió logo-exor.png */
+.loader__letter {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: 2px solid var(--brass);
+  border-radius: 10px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 2.2rem;
+  color: var(--text);
+}
+
+.loader__logo ~ .loader__letter { display: none; }
+
+/* Iconos Google (Material Symbols) */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* Etiquetas monoespaciadas (numeración, metadatos) */
+.mono-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+/* Letra invertida (R de MORFI) */
+.flip {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+/* ── Botones ─────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 26px;
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  transition: transform 0.18s var(--ease), background 0.18s var(--ease),
+    border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.btn .material-symbols-outlined { font-size: 18px; }
+
+.btn--solid {
+  background: var(--text);
+  color: #14130f;
+}
+
+.btn--solid:hover { background: #ffffff; transform: translateY(-1px); }
+
+.btn--line {
+  border-color: var(--line-strong);
+  color: var(--text);
+  background: transparent;
+}
+
+.btn--line:hover {
+  border-color: var(--brass);
+  color: var(--brass);
+  transform: translateY(-1px);
+}
+
+.btn--full { width: 100%; }
+
+/* ── Cabecera ────────────────────────────────────────────────── */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  height: var(--header-h);
+  border-bottom: 1px solid transparent;
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.site-header--solid {
+  background: rgba(15, 15, 13, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: var(--line);
+}
+
+.header__inner {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand__logo {
+  height: 30px;
+  width: auto;
+  mix-blend-mode: screen;
+}
+
+.brand__name {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.site-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.site-nav__link {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 9px 15px;
+  border-radius: 4px;
+  position: relative;
+  transition: color 0.15s var(--ease);
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 5px;
+  height: 1px;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s var(--ease);
+}
+
+.site-nav__link:hover { color: var(--text); }
+
+.site-nav__link--active { color: var(--text); }
+.site-nav__link--active::after { transform: scaleX(1); }
+
+.nav-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  place-items: center;
+  color: var(--text);
+}
+
+.nav-toggle .material-symbols-outlined { font-size: 22px; }
+
+/* ── Hero / Inicio ───────────────────────────────────────────── */
+
+.hero {
+  padding-top: calc(var(--header-h) + 96px);
+  padding-bottom: 96px;
+  position: relative;
+}
+
+.hero::before {
+  /* trama tipográfica sutil: línea vertical guía, estilo editorial */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: min(1160px, 100% - 48px);
+  transform: translateX(-50%);
+  border-left: 1px solid rgba(236, 232, 223, 0.05);
+  pointer-events: none;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+.kicker__rule {
+  width: 44px;
+  height: 1px;
+  background: var(--brass);
+}
+
+.hero__title {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-size: clamp(2.7rem, 6.4vw, 4.9rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  max-width: 14ch;
+}
+
+.hero__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brass);
+}
+
+.hero__lede {
+  margin-top: 26px;
+  font-size: 1.06rem;
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 40px;
+}
+
+/* ── Tarjetas de proyecto ────────────────────────────────────── */
+
+.pcard {
+  position: relative;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 16 / 11;
+  isolation: isolate;
+  background: var(--bg-raised);
+  transition: border-color 0.25s var(--ease);
+}
+
+.pcard__media {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--bg-raised);
+  transition: transform 0.6s var(--ease);
+  z-index: -2;
+}
+
+.pcard__media--mono {
+  display: grid;
+  place-items: center;
+}
+
+.pcard__media--mono span {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 4.5rem;
+  font-weight: 500;
+  color: rgba(236, 232, 223, 0.10);
+}
+
+/* Oscurecido sobre el logo para legibilidad del texto */
+.pcard__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 13, 0.30) 0%,
+    rgba(15, 15, 13, 0.55) 45%,
+    rgba(15, 15, 13, 0.94) 100%
+  );
+  transition: background 0.3s var(--ease);
+}
+
+.pcard:hover .pcard__shade {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 13, 0.42) 0%,
+    rgba(15, 15, 13, 0.68) 45%,
+    rgba(15, 15, 13, 0.96) 100%
+  );
+}
+
+.pcard:hover {
+  border-color: var(--line-strong);
+}
+
+.pcard:hover .pcard__media {
+  transform: scale(1.04);
+}
+
+.pcard__num {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(236, 232, 223, 0.55);
+}
+
+.pcard__arrow {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 20px;
+  color: rgba(236, 232, 223, 0.55);
+  transition: color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.pcard:hover .pcard__arrow {
+  color: var(--brass);
+  transform: translate(2px, -2px);
+}
+
+.pcard__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px;
+}
+
+.pcard__name {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.pcard__desc {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: rgba(236, 232, 223, 0.72);
+  max-width: 48ch;
+}
+
+.pcard__link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(236, 232, 223, 0.14);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.pcard__domain {
+  color: rgba(236, 232, 223, 0.5);
+}
+
+.pcard__go {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--brass);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.pcard__go .material-symbols-outlined { font-size: 14px; }
+
+/* ── Selector de servicio de correo ──────────────────────────── */
+
+.mailpop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+}
+
+.mailpop[hidden] { display: none; }
+
+.mailpop__backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.mailpop__panel {
+  position: absolute;
+  background: #191916;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 28px 60px -18px rgba(0, 0, 0, 0.75);
+  padding: 16px;
+  animation: mailpop-in 0.16s var(--ease);
+}
+
+@keyframes mailpop-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mailpop__title {
+  padding: 2px 6px 10px;
+  color: var(--muted);
+}
+
+.mailpop__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mailpop__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 10px;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: background 0.13s var(--ease);
+}
+
+.mailpop__opt:hover { background: rgba(236, 232, 223, 0.06); }
+
+.mailpop__opt .material-symbols-outlined {
+  margin-left: auto;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.mailpop__opt:hover .material-symbols-outlined { color: var(--brass); }
+
+.mailpop__name { flex: 0 0 auto; }
+
+.mailpop__hint {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mailpop__note {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 0.8rem;
+  color: var(--brass);
+  border-top: 1px solid var(--line);
+}
+
+/* ── Secciones ───────────────────────────────────────────────── */
+
+.section {
+  padding: 110px 0 0;
+  scroll-margin-top: var(--header-h);
+}
+
+.section--end { padding-bottom: 120px; }
+
+#inicio { scroll-margin-top: 0; }
+
+.section__head {
+  margin-bottom: 44px;
+}
+
+.section__title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-top: 12px;
+}
+
+.section__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brass);
+}
+
+.section__sub {
+  margin-top: 14px;
+  color: var(--muted);
+  max-width: 56ch;
+  font-size: 0.98rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.cards__empty {
+  grid-column: 1 / -1;
+  padding: 48px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+.noscript {
+  margin-top: 20px;
+  color: var(--muted);
+}
+
+/* ── Contacto ────────────────────────────────────────────────── */
+
+.contact {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 19px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-top: 14px;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+
+.contact-row:first-of-type { margin-top: 32px; }
+
+.contact-row:hover {
+  border-color: var(--line-strong);
+  background: var(--panel);
+}
+
+.contact-row__icon {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+}
+
+.contact-row__icon--wa {
+  color: var(--wa);
+  border-color: rgba(143, 199, 164, 0.25);
+}
+
+.contact-row__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.contact-row__label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.contact-row__value {
+  font-weight: 600;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-row__arrow {
+  color: var(--muted);
+  font-size: 19px;
+  transition: color 0.18s var(--ease), transform 0.18s var(--ease);
+}
+
+.contact-row:hover .contact-row__arrow {
+  color: var(--brass);
+  transform: translate(2px, -2px);
+}
+
+/* Formulario → mailto pre-escrito */
+.contact__form {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+
+.field label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field label i {
+  font-style: normal;
+  color: var(--brass);
+}
+
+.field input,
+.field textarea {
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  padding: 9px 2px 11px;
+  outline: none;
+  resize: vertical;
+  min-height: 42px;
+  transition: border-color 0.2s var(--ease);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(160, 154, 140, 0.55);
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-bottom-color: var(--brass);
+}
+
+.form-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: -8px;
+}
+
+.form-error {
+  font-size: 0.82rem;
+  color: #d98a7e;
+  text-align: center;
+}
+
+/* ── Pie ─────────────────────────────────────────────────────── */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding-top: 56px;
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+.footer__brand .brand__name { font-size: 1.5rem; }
+
+.footer__brand p {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.footer__nav,
+.footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__nav .mono-label,
+.footer__contact .mono-label {
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.footer__nav a,
+.footer__contact a {
+  font-size: 0.9rem;
+  color: var(--muted);
+  width: fit-content;
+  transition: color 0.15s var(--ease);
+}
+
+.footer__nav a:hover,
+.footer__contact a:hover { color: var(--text); }
+
+.footer__bottom {
+  margin-top: 48px;
+  padding: 22px 0 26px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.footer__sig {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Pantallas muy anchas */
+@media (min-width: 1500px) {
+  .wrap { width: min(1240px, 100% - 64px); }
+  body { font-size: 17px; }
+}
+
+/* Tablets horizontales / laptops chicas */
+@media (max-width: 980px) {
+  .contact { grid-template-columns: 1fr; gap: 48px; }
+}
+
+/* Tablets verticales / móviles grandes */
+@media (max-width: 760px) {
+  :root { --header-h: 62px; }
+
+  .nav-toggle { display: grid; }
+
+  .site-nav {
+    position: absolute;
+    top: var(--header-h);
+    left: 24px;
+    right: 24px;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    background: #151512;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.18s var(--ease), transform 0.18s var(--ease),
+      visibility 0.18s;
+  }
+
+  .site-nav--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .site-nav__link { padding: 13px 14px; font-size: 0.82rem; }
+  .site-nav__link::after { left: 14px; right: auto; width: 24px; bottom: 9px; }
+
+  .hero { padding-top: calc(var(--header-h) + 56px); }
+  .hero__title { font-size: clamp(2.2rem, 9vw, 3rem); }
+  .section { padding: 76px 0 0; }
+  .section--end { padding-bottom: 84px; }
+
+  .contact__form { padding: 24px; }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
+}
+
+/* Móviles chicos */
+@media (max-width: 420px) {
+  .wrap { width: calc(100% - 36px); }
+  .btn { padding: 12px 20px; width: 100%; }
+  .hero__actions { flex-direction: column; }
+  .footer__grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer__bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+/* Orientación vertical (móviles / tablets paradas):
+   las tarjetas crecen en altura para aprovechar el retrato */
+@media (orientation: portrait) and (max-width: 760px) {
+  .pcard { aspect-ratio: 4 / 5; }
+}
+
+/* Pantallas horizontales muy bajas (laptops con poca altura) */
+@media (orientation: landscape) and (max-height: 560px) {
+  .hero { padding-top: calc(var(--header-h) + 48px); }
+}
+
+/* Respeta la preferencia de menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}

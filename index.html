@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ExoR — Desarrollo de software. Soluciones digitales a la medida de tu negocio." />
+  <title>ExoR</title>
+
+  <link rel="icon" type="image/png" href="assets/logos/exor-logo.png" />
+
+  <!-- Tipografías e iconos (Google Fonts / Google Icons) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- Pantalla de carga -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__mark">
+      <img class="loader__logo" src="assets/logos/exor-logo.png" alt="ExoR"
+           onerror="this.remove()" />
+      <span class="loader__letter">E</span>
+    </div>
+  </div>
+
+  <!-- Fondo: shader WebGL (solo escritorio) + velo para legibilidad -->
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="bg-veil" aria-hidden="true"></div>
+
+  <!-- ══════════ Cabecera ══════════ -->
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header__inner">
+      <a class="brand" href="#inicio" aria-label="ExoR — Inicio">
+        <!-- Logo de ExoR: assets/logos/exor-logo.png -->
+        <img class="brand__logo" src="assets/logos/exor-logo.png" alt="ExoR"
+             onerror="this.remove()" />
+        <span class="brand__name">ExoR</span>
+      </a>
+
+      <nav class="site-nav" id="siteNav" aria-label="Navegación principal">
+        <a class="site-nav__link" href="#inicio"    data-spy="inicio">Inicio</a>
+        <a class="site-nav__link" href="#portafolio" data-spy="portafolio">Portafolio</a>
+        <a class="site-nav__link" href="#contacto"  data-spy="contacto">Contacto</a>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span class="material-symbols-outlined" id="navToggleIcon">menu</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ══════════ Inicio ══════════ -->
+    <section class="hero" id="inicio">
+      <div class="wrap">
+
+        <h1 class="hero__title">
+          Software útil,<br />hecho <em>a medida.</em>
+        </h1>
+
+        <p class="hero__lede">
+          Diseño y construyo sistemas que resuelven problemas reales de
+          negocio: claros de usar, rápidos y mantenibles.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--solid" href="#portafolio">Ver portafolio</a>
+          <a class="btn btn--line" href="#contacto"> Hablemos <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════ Portafolio ══════════ -->
+    <section class="section" id="portafolio">
+      <div class="wrap">
+        <header class="section__head">
+          <h2 class="section__title">Trabajo en producción</h2>
+          <p class="section__sub">
+            Sistemas reales, funcionando. Cada tarjeta abre el sitio del
+            proyecto en una pestaña nueva.
+          </p>
+        </header>
+
+        <div class="cards" id="projectGrid"><!-- JS renderiza aquí --></div>
+        <noscript><p class="noscript">Activá JavaScript para ver el portafolio.</p></noscript>
+      </div>
+    </section>
+
+    <!-- ══════════ Contacto ══════════ -->
+    <section class="section section--end" id="contacto">
+      <div class="wrap contact">
+        <div class="contact__info">
+          <h2 class="section__title">¿Necesitas una solución?<br /><em>Hablemos.</em></h2>
+          <p class="section__sub">
+            Contame qué necesita tu negocio. Respondo a la brevedad, con una
+            propuesta clara y sin vueltas.
+          </p>
+
+          <a class="contact-row" id="waRow" href="#" target="_blank" rel="noopener noreferrer">
+            <span class="contact-row__icon contact-row__icon--wa">
+              <span class="material-symbols-outlined">chat_bubble</span>
+            </span>
+            <span class="contact-row__text">
+              <span class="contact-row__label">WhatsApp</span>
+              <span class="contact-row__value" id="waValue"></span>
+            </span>
+            <span class="material-symbols-outlined contact-row__arrow">arrow_outward</span>
+          </a>
+
+          <a class="contact-row" id="mailRow" href="#">
+            <span class="contact-row__icon">
+              <span class="material-symbols-outlined">mail</span>
+            </span>
+            <span class="contact-row__text">
+              <span class="contact-row__label">Mail</span>
+              <span class="contact-row__value" id="mailValue"></span>
+            </span>
+            <span class="material-symbols-outlined contact-row__arrow">arrow_outward</span>
+          </a>
+        </div>
+
+        <!-- El envío arma un mailto: con asunto y cuerpo pre-escritos -->
+        <form class="contact__form" id="contactForm" novalidate>
+          <div class="field">
+            <label for="fNombre">Tu nombre <i>*</i></label>
+            <input id="fNombre" name="nombre" type="text" required
+                   placeholder="Ej.: María González" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="fMarca">Marca / Empresa / Referente</label>
+            <input id="fMarca" name="marca" type="text"
+                   placeholder="Ej.: Distribuidora Sur" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="fContacto">Tu email o teléfono</label>
+            <input id="fContacto" name="contacto" type="text"
+                   placeholder="Para responderte" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="fMensaje">¿Qué necesitas? <i>*</i></label>
+            <textarea id="fMensaje" name="mensaje" rows="5" required
+              placeholder="Ej.: Necesito un sistema para gestionar pedidos y stock de mi local…"></textarea>
+          </div>
+          <button type="submit" class="btn btn--solid btn--full">Enviar por correo</button>
+          <p class="form-note">
+            Se abrirá tu aplicación de correo con el mensaje ya armado,
+            listo para enviar.
+          </p>
+          <p class="form-error" id="formError" hidden>
+            Completá los campos marcados para enviar.
+          </p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════ Pie ══════════ -->
+  <footer class="site-footer">
+    <div class="wrap footer__grid">
+      <div class="footer__brand">
+        <span class="brand__name">ExoR</span>
+        <p>Desarrollo de software a medida.<br />Sistemas web, herramientas y plataformas.</p>
+      </div>
+      <nav class="footer__nav" aria-label="Navegación del pie">
+        <span class="mono-label">Índice</span>
+        <a href="#inicio">Inicio</a>
+        <a href="#portafolio">Portafolio</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <div class="footer__contact">
+        <span class="mono-label">Contacto</span>
+        <a id="footMail" href="#"></a>
+        <a id="footWa" href="#" target="_blank" rel="noopener noreferrer"></a>
+      </div>
+    </div>
+    <div class="wrap footer__bottom">
+      <span>© <span id="year"></span> ExoR. Todos los derechos reservados.</span>
+      <span class="footer__sig">Proyecto ExoR</span>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/projects.js"></script>
+  <script src="assets/js/shader.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
