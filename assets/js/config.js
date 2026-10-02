@@ -19,5 +19,5 @@ const CONTACT = {
 
   // Mensaje pre-escrito que llega al abrir el chat de WhatsApp
   whatsappMessage:
-    "Hola, vi tu portafolio y me interesa una solución para mi proyecto.",
+    "¡Hola! Vi tu portfolio y me interesa una solución para mi proyecto.",
 };
